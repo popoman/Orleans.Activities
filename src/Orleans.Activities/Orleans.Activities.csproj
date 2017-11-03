@@ -171,7 +171,6 @@
     <Compile Include="Hosting\WorkflowInterfaceProxy.cs" />
     <Compile Include="Hosting\WorkflowCallbackInterfaceProxy.cs" />
     <Compile Include="Hosting\WorkflowStatus.cs" />
-    <Compile Include="Persistence\InstanceValueDictionarySerializer.cs" />
     <Compile Include="ReceiveRequestSendResponseScope.cs" />
     <Compile Include="Tracking\OperationTrackingRecord.cs" />
     <Compile Include="Tracking\TrackingParticipant.cs" />
