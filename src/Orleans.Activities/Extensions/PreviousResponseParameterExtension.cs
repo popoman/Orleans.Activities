@@ -38,9 +38,29 @@ namespace Orleans.Activities.Extensions
         [Serializable]
         protected abstract class ResponseParameter
         {
-            public bool IsCanceled { get; }
-            public Type Type { get; }
-            public object Value { get; }
+            private bool isCanceled;
+
+            public bool IsCanceled
+            {
+                get { return isCanceled; }
+                set { isCanceled = value; }
+            }
+
+            private Type type;
+
+            public Type Type
+            {
+                get { return type; }
+                set { type = value; }
+            }
+
+            private Object value;
+
+            public Object Value
+            {
+                get { return value; }
+                set { this.value = value; }
+            }
 
             protected ResponseParameter(bool isCanceled, Type type, object value)
             {
