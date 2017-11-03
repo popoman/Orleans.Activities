@@ -19,6 +19,7 @@ using System.IO;
 using Orleans.Activities.Persistence;
 using System.Activities.Tracking;
 using Orleans.Activities.Configuration;
+using Orleans.Activities.Helpers;
 
 namespace Orleans.Activities.Test
 {
@@ -177,7 +178,7 @@ namespace Orleans.Activities.Test
             if (workflowStates.Count == 0 && index == 0)
                 state = new WorkflowState();
             else
-                state = InstanceValueDictionarySerializer.Deserialize(workflowStates[index]) as IWorkflowState;
+                state = NetDataContractSerializerHelper.Deserialize(workflowStates[index]) as IWorkflowState;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
@@ -206,7 +207,7 @@ namespace Orleans.Activities.Test
                 throwDuringPersistence = false;
                 throw new TestException("During persistence");
             }
-            workflowStates.Insert(0, InstanceValueDictionarySerializer.Serialize(state));
+            workflowStates.Insert(0, NetDataContractSerializerHelper.Serialize(state));
             Written.Set();
             return TaskConstants.Completed;
         }

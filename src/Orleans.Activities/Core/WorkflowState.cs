@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Activities;
-using System.Runtime.DurableInstancing;
-using System.Xml.Linq;
+﻿using Orleans.Activities.Helpers;
 using Orleans.CodeGeneration;
 using Orleans.Serialization;
-using System.IO;
-using System.IO.Compression;
-using System.Xml;
-using System.Runtime.Serialization;
+using System;
+using System.Activities;
+using System.Collections.Generic;
+using System.Runtime.DurableInstancing;
+using System.Xml.Linq;
 
 namespace Orleans.Activities
 {
@@ -29,34 +22,17 @@ namespace Orleans.Activities
         [SerializerMethod]
         static private void Serialize(object input, ISerializationContext context, Type expected)
         {
-            using (MemoryStream memStream = new MemoryStream())
-            using (GZipStream zipStream = new GZipStream(memStream, CompressionMode.Compress))
-            {
-                using (XmlDictionaryWriter xmlDictionaryWriter = XmlDictionaryWriter.CreateBinaryWriter(zipStream))
-                {
-                    NetDataContractSerializer serializer = new NetDataContractSerializer();
-                    serializer.WriteObject(xmlDictionaryWriter, input);
-                    xmlDictionaryWriter.Close();
-                }
-                zipStream.Close();
-                var array = memStream.ToArray();
-                context.StreamWriter.Write(array.Length);
-                context.StreamWriter.Write(array);
-            }
+            byte[] array = NetDataContractSerializerHelper.Serialize(input);
+
+            context.StreamWriter.Write(array.Length);
+            context.StreamWriter.Write(array);
         }
 
         [DeserializerMethod]
         static private object Deserialize(Type expected, IDeserializationContext context)
         {
             var len = context.StreamReader.ReadInt();
-
-            using (MemoryStream memStream = new MemoryStream(context.StreamReader.ReadBytes(len)))
-            using (GZipStream zipStream = new GZipStream(memStream, CompressionMode.Decompress))
-            using (XmlDictionaryReader xmlDictionaryReader = XmlDictionaryReader.CreateBinaryReader(zipStream, XmlDictionaryReaderQuotas.Max))
-            {
-                NetDataContractSerializer serializer = new NetDataContractSerializer();
-                return serializer.ReadObject(xmlDictionaryReader);
-            }
+            return NetDataContractSerializerHelper.Deserialize(context.StreamReader.ReadBytes(len));
         }
 
         [CopierMethod]
